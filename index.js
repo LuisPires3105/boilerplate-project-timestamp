@@ -33,8 +33,10 @@ app.get("/api/other", function (req, res) {
 
 // your second API endpoint... 
 app.get("/api/:date?", function (req, res) {
+
   let aDate;
   let aDate_unix;
+  
   if(!req.params.date){
     aDate = new Date();
     aDate_unix = new Date().getTime(); 
@@ -45,13 +47,13 @@ app.get("/api/:date?", function (req, res) {
     aDate = new Date(req.params.date);
     aDate_unix = new Date(aDate).getTime();
   }
+  
   if(isNaN(aDate.getMonth())){
-    console.log("if: " + req.params.date);
     res.json({"error":"Invalid Date"});
   } else{
-    console.log("else: " + req.params.date + "\nresult of operation: "+ aDate);
     res.json({unix: aDate_unix, utc: aDate.toGMTString()});
   }
+  
 });
 
 // Listen on port set in environment variable or default to 3000
