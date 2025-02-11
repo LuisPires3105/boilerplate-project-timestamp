@@ -37,18 +37,22 @@ app.get("/api/:date?", function (req, res) {
   let aDate_unix;
   if(!req.params.date){
     aDate = new Date();
-    aDate_unix = Math.floor(new Date().getTime() / 1000); 
-  } else if(req.params.date.includes('-')){
-    aDate = new Date(req.params.date.replace('-','.'));
-    aDate_unix = Math.floor(new Date(aDate).getTime() / 1000);
-  } else{
+    aDate_unix = new Date().getTime(); 
+  }  else if(req.params.date.match("[0-9]+") && (!req.params.date.includes('-'))){
     aDate_unix = parseInt(req.params.date);
-    aDate = new Date(parseInt(aDate_unix)).toString();
+    aDate = new Date(parseInt(aDate_unix));
+  } else{
+    aDate = new Date(req.params.date);
+    aDate_unix = new Date(aDate).getTime();
+    if(isNaN(aDate.getMonth())){
+      res.json({"error":"Invalid Date"})
+    }
   }
   let hours = aDate.getHours() < 10 ? "0" + aDate.getHours() : aDate.getHours();
   let minutes = aDate.getMinutes() < 10 ? "0" + aDate.getMinutes() : aDate.getMinutes();
   let seconds = aDate.getSeconds() < 10 ? "0" + aDate.getSeconds() : aDate.getSeconds();
-  res.json({unix: aDate_unix, utc: `${weekDays[aDate.getDay()]}, ${aDate.getDate()} ${months[aDate.getMonth()]} ${aDate.getFullYear()} ${hours}:${minutes}:${seconds} GMT`});
+  let year = aDate.getFullYear() < 1000 ? "0" + aDate.getFullYear() : aDate.getFullYear();
+  res.json({unix: aDate_unix, utc: `${weekDays[aDate.getDay()]}, ${aDate.getDate()} ${months[aDate.getMonth()]} ${year} ${hours}:${minutes}:${seconds} GMT`});
 });
 
 // Listen on port set in environment variable or default to 3000
