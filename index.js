@@ -4,6 +4,8 @@
 // init project
 var express = require('express');
 var app = express();
+var weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
 // enable CORS (https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)
 // so that your API is remotely testable by FCC 
@@ -27,6 +29,26 @@ app.get("/api/hello", function (req, res) {
 // your second API endpoint... 
 app.get("/api/other", function (req, res) {
   res.json({greeting: 'other API'});
+});
+
+// your second API endpoint... 
+app.get("/api/:date?", function (req, res) {
+  let aDate;
+  let aDate_unix;
+  if(!req.params.date){
+    aDate = new Date();
+    aDate_unix = Math.floor(new Date().getTime() / 1000); 
+  } else if(req.params.date.includes('-')){
+    aDate = new Date(req.params.date.replace('-','.'));
+    aDate_unix = Math.floor(new Date(aDate).getTime() / 1000);
+  } else{
+    aDate_unix = parseInt(req.params.date);
+    aDate = new Date(parseInt(aDate_unix)).toString();
+  }
+  let hours = aDate.getHours() < 10 ? "0" + aDate.getHours() : aDate.getHours();
+  let minutes = aDate.getMinutes() < 10 ? "0" + aDate.getMinutes() : aDate.getMinutes();
+  let seconds = aDate.getSeconds() < 10 ? "0" + aDate.getSeconds() : aDate.getSeconds();
+  res.json({unix: aDate_unix, utc: `${weekDays[aDate.getDay()]}, ${aDate.getDate()} ${months[aDate.getMonth()]} ${aDate.getFullYear()} ${hours}:${minutes}:${seconds} GMT`});
 });
 
 // Listen on port set in environment variable or default to 3000
