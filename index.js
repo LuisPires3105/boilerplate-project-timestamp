@@ -38,7 +38,7 @@ app.get("/api/:date?", function (req, res) {
   if(!req.params.date){
     aDate = new Date();
     aDate_unix = new Date().getTime(); 
-  }  else if(req.params.date.match("[0-9]+") && (!req.params.date.includes('-'))){
+  }  else if(req.params.date.match("[0-9]+") && (!req.params.date.includes('-')) && (!req.params.date.includes(' '))){
     aDate_unix = parseInt(req.params.date);
     aDate = new Date(parseInt(aDate_unix));
   } else{
@@ -46,13 +46,11 @@ app.get("/api/:date?", function (req, res) {
     aDate_unix = new Date(aDate).getTime();
   }
   if(isNaN(aDate.getMonth())){
+    console.log("if: " + req.params.date);
     res.json({"error":"Invalid Date"});
   } else{
-    let hours = aDate.getHours() < 10 ? "0" + aDate.getHours() : aDate.getHours();
-    let minutes = aDate.getMinutes() < 10 ? "0" + aDate.getMinutes() : aDate.getMinutes();
-    let seconds = aDate.getSeconds() < 10 ? "0" + aDate.getSeconds() : aDate.getSeconds();
-    let year = aDate.getFullYear() < 1000 ? "0" + aDate.getFullYear() : aDate.getFullYear();
-    res.json({unix: aDate_unix, utc: `${weekDays[aDate.getDay()]}, ${aDate.getDate()} ${months[aDate.getMonth()]} ${year} ${hours}:${minutes}:${seconds} GMT`});
+    console.log("else: " + req.params.date + "\nresult of operation: "+ aDate);
+    res.json({unix: aDate_unix, utc: aDate.toGMTString()});
   }
 });
 
